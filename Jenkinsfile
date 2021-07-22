@@ -2,6 +2,7 @@ pipeline {
   agent none
   stages {
     stage('build') {
+      
       agent {
         docker {
           image 'maven:3.6.3-jdk-11-slim'
@@ -34,6 +35,11 @@ pipeline {
         }
 
       }
+      when {
+        expression {
+          return env.BRANCH_NAME =='master';
+        }
+      }
       steps {
         echo 'package maven app'
         sh 'mvn package -DskipTests'
@@ -43,6 +49,11 @@ pipeline {
 
     stage('Docker BnP') {
       agent any
+      when {
+        expression {
+          return env.BRANCH_NAME =='master';
+        }
+      }
       steps {
         script {
           docker.withRegistry('https://index.docker.io/v1/', 'dockerlogin') {
